@@ -13,7 +13,9 @@ Run the bot (usually ./MSDB in a terminal on linux)
 ## Commands
 ; is currently the bot prompt
 
-- ;console command to send to mindustry server console
+- ;console (command to send to mindustry server console)
+
+(parenthesis not needed for console command)
 
 
 ## Todo
