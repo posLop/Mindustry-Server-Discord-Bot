@@ -12,7 +12,7 @@ Run the bot (usually ./MSDB in a terminal on linux)
 
 This will generate a default config file.  
 
-The availible options are:
+The available options are:
 
 - ip = Ip address of your mindustry server.  Usually leave as localhost if running the bot on the same machine as the mindustry server
 - port = Port of the socket used by the mindustry server.  It is set to the default port used by the mindustry server but you can check which port is in use by useing the "config socketInputPort" command in the server console
