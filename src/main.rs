@@ -1,42 +1,16 @@
+mod mindus;
+use crate::mindus::*;
 use std::io::{Write, BufRead};
-use std::time::Duration;
-use std::{env, io, clone};
+use std::{env};
 use serenity::async_trait;
-use serenity::futures::io::{BufReader, BufWriter};
 use serenity::prelude::*;
 use serenity::model::channel::Message;
 use serenity::framework::standard::macros::{command, group};
-use serenity::framework::standard::{StandardFramework, CommandResult, Args};
+use serenity::framework::standard::{StandardFramework, CommandResult};
 use dotenv::dotenv;
-use std::net::TcpStream;
-
-
-
-struct TcpSock {
-    stream: TcpStream,
-    reader: std::io::BufReader<TcpStream>,
-    writer: std::io::BufWriter<TcpStream>
-}
-
-
-impl TypeMapKey for TcpSock {
-    type Value = TcpSock;
-}
-
-impl TcpSock {
-    pub fn new() -> std::io::Result<Self> {
-        let stream = TcpStream::connect("localhost:6859").expect("Tcp connection fail");
-        stream.set_read_timeout(Some(Duration::from_millis(200)))?;
-        let mut reader = std::io::BufReader::new(stream.try_clone()?);
-        let mut writer = std::io::BufWriter::new(stream.try_clone()?);
-
-        Ok(TcpSock { stream, reader, writer })
-    }
-}
-
 
 #[group]
-#[commands(ping, pong, send)]
+#[commands(ping, pong, console)]
 struct General;
 struct Handler;
 
@@ -46,14 +20,16 @@ impl EventHandler for Handler {}
 #[tokio::main]
 async fn main() {
     
-    let sock = TcpSock::new().unwrap();
+    let conf = init_conf();
+
+    let sock = TcpSock::new(conf.ip, conf.port).unwrap();
+
     dotenv().ok();
         
     let framework = StandardFramework::new()
-        .configure(|c| c.prefix(";")) // set the bot's prefix to "~"
+        .configure(|c| c.prefix(conf.trigger)) 
         .group(&GENERAL_GROUP);
 
-    // Login with a bot token from the environment
     let token = env::var("DISCORD_TOKEN").expect("token");
     let intents = GatewayIntents::non_privileged() | GatewayIntents::MESSAGE_CONTENT;
     let mut client = Client::builder(&token, intents)
@@ -88,9 +64,9 @@ async fn pong(ctx: &Context, msg: &Message) -> CommandResult {
 }
 
 #[command]
-async fn send(ctx: &Context, msg: &Message) -> CommandResult {
+async fn console(ctx: &Context, msg: &Message) -> CommandResult {
 
-    let input = msg.content.strip_prefix(";send ").to_owned();
+    let input = msg.content.strip_prefix(";console ").to_owned();
     let output = &mut String::new();
     if input == Option::None {
         msg.reply(ctx, "Not enough Parameters").await?;
