@@ -1,5 +1,5 @@
 ## Discrod
-https://discord.gg/FaXKDWQ9
+https://discord.gg/sRKCKQAdU4
 
 ## Usage
 Download the executable from releases
