@@ -15,15 +15,19 @@ The available options are:
 - discordToken = the discord bot token (required)
 - ip = Ip address of your mindustry server.  Usually leave as localhost if running the bot on the same machine as the mindustry server (required)
 - port = Port of the socket used by the mindustry server.  It is set to the default port used by the mindustry server but you can check which port is in use by useing the "config socketInputPort" command in the server console (required)
-- trigger = The single letter or character that will be used to call the bot (ex. ;command !command ?command mcommand) (optional)
-- roles = Not currently implemented (optional)
+- prefix = The word or character that will be used to call the bot (ex. ;command !command ?command MScommand) (optional)
+- roles = unimplemented
 
 ## Commands
 ; is currently the default bot prompt
 
 - ;console (command to send to mindustry server console)
 
-(parenthesis not needed for console command)
+- ;git (post git link)
+
+- ;discord (post discord link)
+
+(parenthesis not needed)
 
 
 ## Todo

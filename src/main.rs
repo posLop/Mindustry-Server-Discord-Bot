@@ -9,6 +9,8 @@ use serenity::framework::standard::macros::{command, group, help, hook};
 use serenity::framework::standard::{StandardFramework, CommandResult, Args, HelpOptions, CommandGroup, help_commands};
 use serenity::utils::Color;
 use std::collections::HashSet;
+use std::error::Error;
+use std::io::Stderr;
 use std::str::FromStr;
 
 #[group]
@@ -115,19 +117,19 @@ async fn console(ctx: &Context, msg: &Message) -> CommandResult {
     let data = ctx.data.read().await;
 
     let sock = data.get::<TcpSock>().unwrap();
-    let conf = data.get::<Config>().unwrap();
+    // let conf = data.get::<Config>().unwrap();
     
-    if !check_role(ctx, msg, conf).await {
-        // msg.channel_id.say(ctx, "You do not have permission to use this command").await?;
-        msg.channel_id.send_message(ctx, |m| {
-            m.content("test")
-                .embed(|e| e
-                    .title("No Permissions")
-                    .description("You do not have permission to use this command")
-                    .color(Color::RED))
-        }).await?;
-        return Ok(());
-    }
+    // if !check_role(ctx, msg, conf).await.unwrap_or_else(|e| false) {
+    //     // msg.channel_id.say(ctx, "You do not have permission to use this command").await?;
+    //     msg.channel_id.send_message(ctx, |m| {
+    //         m.content("test")
+    //             .embed(|e| e
+    //                 .title("No Permissions")
+    //                 .description("You do not have permission to use this command")
+    //                 .color(Color::RED))
+    //     }).await?;
+    //     return Ok(());
+    // }
 
     msg.reply(ctx, format!("```\n{}\n```", cons_rw(sock, &input.unwrap()))).await?;
     Ok(())
@@ -145,6 +147,8 @@ async fn discord(ctx: &Context, msg: &Message) -> CommandResult {
     Ok(())
 }
 
-async fn check_role(ctx: &Context, msg: &Message, conf: &Config) -> bool {
-    msg.author.has_role(ctx, msg.guild_id.unwrap(), RoleId::from(u64::from_str(&conf.roles.cons).unwrap())).await.unwrap()
-}
+// async fn check_role(ctx: &Context, msg: &Message, conf: &Config) -> Result<bool, SerenityError> {
+//     let id = RoleId::from(u64::from_str(&conf.roles.cons))?;
+//     let check = msg.author.has_role(ctx, msg.guild_id.unwrap(), id).await?;
+//     Ok(check)
+// }
