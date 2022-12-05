@@ -2,16 +2,12 @@ mod mindus;
 use crate::mindus::*;
 // use std::{env};
 use serenity::async_trait;
-use serenity::model::prelude::{RoleId, UserId};
+use serenity::model::prelude::{UserId};
 use serenity::prelude::*;
 use serenity::model::channel::Message;
 use serenity::framework::standard::macros::{command, group, help, hook};
 use serenity::framework::standard::{StandardFramework, CommandResult, Args, HelpOptions, CommandGroup, help_commands};
-use serenity::utils::Color;
 use std::collections::HashSet;
-use std::error::Error;
-use std::io::Stderr;
-use std::str::FromStr;
 
 #[group]
 #[commands(ping, pong, console, git, discord)]
@@ -35,14 +31,6 @@ async fn my_help(
 }
 
 #[hook]
-async fn after(_ctx: &Context, _msg: &Message, command_name: &str, command_result: CommandResult) {
-    match command_result {
-        Ok(()) => println!("Processed command '{}'", command_name),
-        Err(why) => println!("Command '{}' returned error {:?}", command_name, why),
-    }
-}
-
-#[hook]
 async fn unknown_command(_ctx: &Context, _msg: &Message, unknown_command_name: &str) {
     println!("Could not find command named '{}'", unknown_command_name);
 }
@@ -62,7 +50,8 @@ async fn main() {
     let framework = StandardFramework::new()
         .configure(|c| c
             .prefix(conf.prefix.clone())
-            .case_insensitivity(true)) 
+            .case_insensitivity(true))
+            .unrecognised_command(unknown_command)
             .help(&MY_HELP)
             .group(&GENERAL_GROUP);
 
@@ -106,13 +95,15 @@ async fn pong(ctx: &Context, msg: &Message) -> CommandResult {
 #[aliases("c", "cons")]
 #[description("Send a command to the mindustry server console")] 
 #[example("c status")]
-async fn console(ctx: &Context, msg: &Message) -> CommandResult {
-    let input = msg.content.strip_prefix(";console ").to_owned();
+#[min_args(1)]
+async fn console(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
 
-    if input == Option::None {
-        msg.reply(ctx, "Not enough Parameters").await?;
-        return Ok(());
-    }
+    // let input = msg.content.strip_prefix(";console ").to_owned();
+
+    // if input == Option::None {
+    //     msg.reply(ctx, "Not enough Parameters").await?;
+    //     return Ok(());
+    // }
 
     let data = ctx.data.read().await;
 
@@ -131,7 +122,14 @@ async fn console(ctx: &Context, msg: &Message) -> CommandResult {
     //     return Ok(());
     // }
 
-    msg.reply(ctx, format!("```\n{}\n```", cons_rw(sock, &input.unwrap()))).await?;
+    msg.channel_id.send_message(ctx, |m| {
+        m.content("")
+            .embed(|e| e
+                .title("Console")
+                .description(cons_rw(sock, args.message()))
+                .color((255, 219, 221))
+            )
+    }).await?;
     Ok(())
 }
 
