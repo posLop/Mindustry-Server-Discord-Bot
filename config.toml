@@ -1,4 +1,8 @@
+discordToken = ""
 ip = "localhost"
 port = "6859"
 trigger = ";"
-roles = ""
+
+[roles]
+auth = ""
+cons = ""
