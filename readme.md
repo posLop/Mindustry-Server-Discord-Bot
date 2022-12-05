@@ -29,4 +29,4 @@ The available options are:
 
 ## Todo
 - Role Permission for console command
-- Remove ansi encoding so mobile users can also clearly see console output
+- Better error handling 
