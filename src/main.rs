@@ -1,12 +1,13 @@
 mod mindus;
 use crate::mindus::*;
-use std::{env};
+// use std::{env};
 use serenity::async_trait;
 use serenity::prelude::*;
 use serenity::model::channel::Message;
 use serenity::framework::standard::macros::{command, group};
 use serenity::framework::standard::{StandardFramework, CommandResult};
-use dotenv::dotenv;
+
+
 
 #[group]
 #[commands(ping, pong, console)]
@@ -23,15 +24,14 @@ async fn main() {
 
     let sock = TcpSock::new(conf.ip, conf.port).unwrap();
 
-    dotenv().ok();
-        
     let framework = StandardFramework::new()
-        .configure(|c| c.prefix(conf.trigger)) 
+        .configure(|c| c
+            .prefix(conf.trigger)
+            .case_insensitivity(true)) 
         .group(&GENERAL_GROUP);
 
-    let token = env::var("DISCORD_TOKEN").expect("token");
     let intents = GatewayIntents::non_privileged() | GatewayIntents::MESSAGE_CONTENT;
-    let mut client = Client::builder(&token, intents)
+    let mut client = Client::builder(&conf.discord_token, intents)
         .event_handler(Handler)
         .framework(framework)
         .await
@@ -49,8 +49,8 @@ async fn main() {
 
 #[command]
 async fn ping(ctx: &Context, msg: &Message) -> CommandResult {
+    
     msg.reply(ctx, "Pong!").await?;
-
     Ok(())
 }
 
@@ -76,7 +76,7 @@ async fn console(ctx: &Context, msg: &Message) -> CommandResult {
 
     let sock = data.get::<TcpSock>().unwrap();
     
-    msg.reply(ctx, format!("```ansi\n{}\n```", cons_rw(sock, &input.unwrap()))).await?;
+    msg.reply(ctx, format!("```\n{}\n```", cons_rw(sock, &input.unwrap()))).await?;
     Ok(())
 }
 

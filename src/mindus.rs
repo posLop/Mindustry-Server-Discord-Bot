@@ -45,10 +45,18 @@ pub fn cons_rw(sock: &TcpSock, input: &str) -> String {
 
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Config {
+    pub discord_token: String,
     pub ip: String,
     pub port: String,
     pub trigger: char,
-    pub roles: String
+    pub roles: Roles
+}
+
+
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct Roles {
+    pub auth: String,
+    pub cons: String
 }
 
 pub fn init_conf() -> Config {
@@ -68,12 +76,6 @@ pub fn init_conf() -> Config {
 
     let config: Config = toml::from_str(&toml_str).expect("unable to fill Config struct");
 
-    // let mut conf_vec: Vec<u8> = vec![];
-    // toml_file.read_to_end(&mut conf_vec).expect("unable to read toml to string");
-    // let toml_str = str::from_utf8(&conf_vec).expect("unable to convert to string");
-    // println!("{}", toml_str);
-    // let config: Config = toml::from_str(toml_str).expect("unable to fill Config struct");
-    
     config
 }
 
@@ -87,10 +89,14 @@ let mut toml_file = OpenOptions::new()
         .unwrap();
 
     let fill_conf = Config {
+        discord_token: String::from(""),
         ip: String::from("localhost"),
         port: String::from("6859"),
         trigger: ';',
-        roles: String::new()
+        roles: Roles {
+            auth: String::from(""),
+            cons: String::from("")
+        }
     };
 
     toml_file.write(toml::to_string(&fill_conf).unwrap().as_bytes()).expect("Unable to write to new file");
