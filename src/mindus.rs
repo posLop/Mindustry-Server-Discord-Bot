@@ -22,6 +22,27 @@ impl TypeMapKey for TcpSock {
     type Value = TcpSock;
 }
 
+
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct Config {
+    pub discord_token: String,
+    pub ip: String,
+    pub port: String,
+    pub prefix: String,
+    pub roles: Roles
+}
+
+
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct Roles {
+    pub auth: String,
+    pub cons: String
+}
+
+impl TypeMapKey for Config {
+    type Value = Config;
+}
+
 pub fn cons_rw(sock: &TcpSock, input: &str) -> String {
 
     let mut output = String::new();
@@ -43,21 +64,6 @@ pub fn cons_rw(sock: &TcpSock, input: &str) -> String {
     output
 }
 
-#[derive(serde::Deserialize, serde::Serialize)]
-pub struct Config {
-    pub discord_token: String,
-    pub ip: String,
-    pub port: String,
-    pub trigger: char,
-    pub roles: Roles
-}
-
-
-#[derive(serde::Deserialize, serde::Serialize)]
-pub struct Roles {
-    pub auth: String,
-    pub cons: String
-}
 
 pub fn init_conf() -> Config {
 
@@ -92,7 +98,7 @@ let mut toml_file = OpenOptions::new()
         discord_token: String::from(""),
         ip: String::from("localhost"),
         port: String::from("6859"),
-        trigger: ';',
+        prefix: String::from(";"),
         roles: Roles {
             auth: String::from(""),
             cons: String::from("")
