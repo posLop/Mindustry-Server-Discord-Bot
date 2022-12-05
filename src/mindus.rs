@@ -1,5 +1,5 @@
 use std::fs::{File, OpenOptions};
-use std::io::{Read, Write, Seek};
+use std::io::{Read, Write, Seek, BufRead};
 use std::time::Duration;
 use std::net::TcpStream;
 use serenity::prelude::TypeMapKey;
@@ -20,6 +20,27 @@ impl TcpSock {
 
 impl TypeMapKey for TcpSock {
     type Value = TcpSock;
+}
+
+pub fn cons_rw(sock: &TcpSock, input: &str) -> String {
+
+    let mut output = String::new();
+
+    let mut writer = std::io::BufWriter::new(sock.stream.try_clone().unwrap());
+    let mut reader = std::io::BufReader::new(sock.stream.try_clone().unwrap());
+
+    writer.write((input.to_owned() + "\n").as_bytes()).unwrap();
+    writer.flush().expect("flush failed");
+    
+    loop {
+        match reader.read_line(&mut output) {
+            Ok(t) => t,
+            Err(_) => break(),
+        };
+    }
+    println!("{}", output);
+    output = String::from_utf8(strip_ansi_escapes::strip(&output).unwrap()).unwrap();
+    output
 }
 
 #[derive(serde::Deserialize, serde::Serialize)]
