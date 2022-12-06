@@ -35,8 +35,8 @@ pub struct Config {
 
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct Roles {
-    pub auth: String,
-    pub cons: String
+    pub auth: Vec<String>,
+    pub cons: Vec<String>
 }
 
 impl TypeMapKey for Config {
@@ -100,8 +100,8 @@ let mut toml_file = OpenOptions::new()
         port: String::from("6859"),
         prefix: String::from(";"),
         roles: Roles {
-            auth: String::from(""),
-            cons: String::from("")
+            auth: vec![String::from(""), String::from("")],
+            cons: vec![String::from("")]
         }
     };
 
