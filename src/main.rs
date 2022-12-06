@@ -12,7 +12,7 @@ use std::collections::HashSet;
 use std::str::FromStr;
 
 #[group]
-#[commands(ping, pong, console, git, discord)]
+#[commands(ping, pong, console, git, discord, auth)]
 struct General;
 struct Handler;
 
@@ -45,7 +45,8 @@ async fn normal_message(_ctx: &Context, msg: &Message) {
 #[tokio::main]
 async fn main() {
     
-    let conf = init_conf();
+
+    let conf = init_conf().await;
 
     let sock = TcpSock::new(conf.ip.clone(), conf.port.clone()).unwrap();
 
@@ -71,7 +72,7 @@ async fn main() {
         }
 
     if let Err(why) = client.start().await {
-        println!("An error occurred while running the client: {:?}", why);
+        println!("An error occurred while running the client: {:?} \n Check that there is a bot token set in config", why);
     }
 }
 
@@ -141,7 +142,7 @@ async fn auth(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     let conf = data.get::<Config>().unwrap();
 
     
-    if !check_role(ctx, msg, &conf.roles.auth).await.unwrap_or_else(|e| true) {
+    if !check_role(ctx, msg, &conf.roles.auth).await.unwrap_or_else(|_e| true) {
         msg.channel_id.send_message(ctx, |m| {
             m.content("")
                 .embed(|e| e
@@ -175,9 +176,9 @@ async fn discord(ctx: &Context, msg: &Message) -> CommandResult {
     Ok(())
 }
 
-async fn check_role(ctx: &Context, msg: &Message, conf: &Vec<String>) -> Result<bool, SerenityError> {
+async fn check_role(ctx: &Context, msg: &Message, roles: &Vec<String>) -> Result<bool, SerenityError> {
     let mut invalid_roles = 0;
-    for v_id in conf {
+    for v_id in roles {
     let u_id = match u64::from_str(&v_id) {
         Ok(n) => n,
         Err(e) => 
@@ -186,14 +187,14 @@ async fn check_role(ctx: &Context, msg: &Message, conf: &Vec<String>) -> Result<
             continue
         },
     };
-    let id = RoleId::from(u_id);
-    let check = msg.author.has_role(ctx, msg.guild_id.unwrap(), id).await?;
+
+    let check = msg.author.has_role(ctx, msg.guild_id.unwrap(), RoleId::from(u_id)).await?;
     if check {
         return Ok(check)
         }
     }
 
-    if invalid_roles == conf.len() {
+    if invalid_roles == roles.len() {
         return Ok(true)
     }
 

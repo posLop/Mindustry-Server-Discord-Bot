@@ -4,6 +4,7 @@ use std::time::Duration;
 use std::net::TcpStream;
 use serenity::prelude::TypeMapKey;
 use std::str;
+use indoc::indoc;
 
 pub struct TcpSock {
     pub stream: TcpStream,
@@ -65,14 +66,14 @@ pub fn cons_rw(sock: &TcpSock, input: &str) -> String {
 }
 
 
-pub fn init_conf() -> Config {
+pub async fn init_conf() -> Config {
+
 
     let mut toml_file = OpenOptions::new()
     .read(true)
     .write(true)
     .open("config.toml")
     .unwrap_or_else(|_e| toml_make());
-    // .unwrap_or(toml_make());
     
     let mut toml_str = String::new();
 
@@ -94,18 +95,44 @@ let mut toml_file = OpenOptions::new()
         .open("config.toml")
         .unwrap();
 
-    let fill_conf = Config {
-        discord_token: String::from(""),
-        ip: String::from("localhost"),
-        port: String::from("6859"),
-        prefix: String::from(";"),
-        roles: Roles {
-            auth: vec![String::from(""), String::from("")],
-            cons: vec![String::from("")]
-        }
-    };
+    let fill_conf = 
+    indoc! {r#"
+    # Discord bot token
+    discord_token = ""
+    
+    # Ip of the mindustry server
+    ip = "localhost"
+    
+    # Port of the mindustry server socket
+    # Run 'config socketInputPort' in the mindustry console to find this port
+    port = "6859"
+    
+    # Prefix used to call commands
+    # Can be any word letter or symbol
+    prefix = ";"
+    
+    # These are the roles needed in order to use the associated command
+    # If an invalid role is used it will be ignored.  If all the roles are invalid or the list is empty then anyone can use the command
+    [roles]
+    # Auth command
+    auth = [""]
+    
+    # console command
+    cons = ["738543444322156574", "822523680391037009"]
+    "#};
 
-    toml_file.write(toml::to_string(&fill_conf).unwrap().as_bytes()).expect("Unable to write to new file");
+    // let fill_conf = Config {
+    //     discord_token: String::from(""),
+    //     ip: String::from("localhost"),
+    //     port: String::from("6859"),
+    //     prefix: String::from(";"),
+    //     roles: Roles {
+    //         auth: vec![String::from(""), String::from("")],
+    //         cons: vec![String::from("")]
+    //     }
+    // };
+
+    toml_file.write(fill_conf.as_bytes()).expect("Unable to write to new file");
     toml_file.flush().unwrap();
     toml_file.rewind().unwrap();
     toml_file
