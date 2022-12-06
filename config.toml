@@ -1,0 +1,22 @@
+# Discord bot token
+discord_token = ""
+
+# Ip of the mindustry server
+ip = "localhost"
+
+# Port of the mindustry server socket
+# Run 'config socketInputPort' in the mindustry console to find this port
+port = "6859"
+
+# Prefix used to call commands
+# Can be any word letter or symbol
+prefix = ";"
+
+# These are the roles needed in order to use the associated command
+# If an invalid role is used it will be ignored.  If all the roles are invalid or the list is empty then anyone can use the command
+[roles]
+# Auth command
+auth = [""]
+
+# console command
+cons = ["738543444322156574", "822523680391037009"]
