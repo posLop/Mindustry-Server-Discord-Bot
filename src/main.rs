@@ -1,6 +1,5 @@
 mod mindus;
 use crate::mindus::*;
-// use std::{env};
 use serenity::async_trait;
 use serenity::model::prelude::{UserId, RoleId};
 use serenity::prelude::*;
@@ -97,7 +96,7 @@ async fn pong(ctx: &Context, msg: &Message) -> CommandResult {
 #[command]
 #[aliases("c", "cons")]
 #[description("Send a command to the mindustry server console")] 
-#[example("c status")]
+#[example("status")]
 #[min_args(1)]
 async fn console(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
 
@@ -133,7 +132,7 @@ async fn console(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
 #[num_args(1)]
 #[aliases("a")]
 #[description("Give youself permissions to build in the mindustry server")] 
-#[example("a ErkDog")]
+#[example("ErkDog")]
 async fn auth(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
 
     let data = ctx.data.read().await;
