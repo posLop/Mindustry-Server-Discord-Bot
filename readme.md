@@ -19,17 +19,19 @@ Or you can download the template from the git
 Check the template for details about each setting
 
 ## Commands
-; is the default bot prompt
 
-- ;console (command to send to mindustry server console)
+- console (used to send a command to send to mindustry server console)
 
-- ;git (post git link)
+- auth (used for authentication on the ECAN servers)
 
-- ;discord (post discord link)
+- git (post git link)
 
-(parenthesis not needed)
+- discord (post discord link)
 
 
 ## Todo
 - Better error handling 
 - make things modular
+
+## Notes
+ Dm me on discord if you need a windows version or any other problems
