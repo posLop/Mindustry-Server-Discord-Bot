@@ -31,5 +31,5 @@ The available options are:
 
 
 ## Todo
-- Role Permission for console command
 - Better error handling 
+- better help command
