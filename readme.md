@@ -1,11 +1,11 @@
 ## Real git
+### [**Gitea**](https://mintyserver.net/git/poslop/Mindustry-Server-Discord-Bot)
 
-https://mintyserver.net/git/poslop/Mindustry-Server-Discord-Bot
-
-> This is the actual git for this project where releases are made
+> This is the actual git for this project where **Releases** for **Download** are made
 
 ## Discrod
-https://discord.gg/sRKCKQAdU4
+
+### [**Discrod**](https://discord.gg/sRKCKQAdU4)
 
 ## Usage
 Download the executable from **Releases**
@@ -20,17 +20,13 @@ Check the [template](config.toml) for details about each setting
 
 ## Commands
 
-- console 
-> used to send a command to the mindustry server console
+- **console:** used to send a command to the mindustry server console
 
-- auth 
-> used for authentication on the ECAN servers
+- **auth:** used for authentication on the ECAN servers
 
-- git 
-> post git link
+- **git:** post git link
 
-- discord 
-> post discord link
+- **discord:** post discord link
 
 
 ## Todo
@@ -38,4 +34,6 @@ Check the [template](config.toml) for details about each setting
 - make things modular
 
 ## Notes
- Dm me on discord if you need a windows version or any other problems
+ Ping me on **Discord** if you need a **Windows** version or about any other problems
+
+![Alt text](https://cdn.discordapp.com/emojis/699037458532139068.gif?quality=lossless&size=48 "riii")
