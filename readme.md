@@ -32,5 +32,4 @@ Check the template for details about each setting
 
 ## Todo
 - Better error handling 
-- better help command
--
+- handle large responses from mindus server
