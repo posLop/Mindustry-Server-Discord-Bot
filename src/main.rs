@@ -12,13 +12,16 @@ use std::str::FromStr;
 
 #[group]
 #[commands(ping, pong, console, git, discord, auth)]
-struct General;
+struct Commands;
 struct Handler;
 
 #[async_trait]
 impl EventHandler for Handler {}
 
 #[help]
+#[strikethrough_commands_tip_in_guild("")] 
+#[max_levenshtein_distance(1)]
+#[available_text("")] 
 async fn my_help(
     context: &Context,
     msg: &Message,
@@ -55,7 +58,7 @@ async fn main() {
             .case_insensitivity(true))
             .unrecognised_command(unknown_command) 
             .help(&MY_HELP)
-            .group(&GENERAL_GROUP);
+            .group(&COMMANDS_GROUP);
 
     let intents = GatewayIntents::non_privileged() | GatewayIntents::MESSAGE_CONTENT;
     let mut client = Client::builder(&conf.discord_token, intents)
@@ -106,7 +109,7 @@ async fn console(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     let conf = data.get::<Config>().unwrap();
 
     
-    if !check_role(ctx, msg, &conf.roles.cons).await.unwrap_or_else(|e| true) {
+    if !check_role(ctx, msg, &conf.roles.cons).await.unwrap_or_else(|_e| true) {
         msg.channel_id.send_message(ctx, |m| {
             m.content("")
                 .embed(|e| e
@@ -122,7 +125,7 @@ async fn console(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
             .embed(|e| e
                 .title("Console")
                 .description(cons_rw(sock, args.message()))
-                .color((255, 219, 221))
+                .color(Color::ROSEWATER)
             )
     }).await?;
     Ok(())
@@ -157,7 +160,7 @@ async fn auth(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
             .embed(|e| e
                 .title("Console")
                 .description(cons_rw(sock, &format!("auth add {}", args.message())))
-                .color((255, 219, 221))
+                .color(Color::ROSEWATER)
             )
     }).await?;
     Ok(())
@@ -180,7 +183,7 @@ async fn check_role(ctx: &Context, msg: &Message, roles: &Vec<String>) -> Result
     for v_id in roles {
     let u_id = match u64::from_str(&v_id) {
         Ok(n) => n,
-        Err(e) => 
+        Err(_e) => 
         {
             invalid_roles += 1;
             continue
