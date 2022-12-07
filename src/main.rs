@@ -67,11 +67,13 @@ async fn main() {
         .await
         .expect("Error creating client");
 
+    println!("Discord Bot Connected!!");
+
     {
         let mut data = client.data.write().await;
         data.insert::<TcpSock>(sock);
         data.insert::<Config>(conf)
-        }
+    }
 
     if let Err(why) = client.start().await {
         println!("An error occurred while running the client: {:?} \n Check that there is a bot token set in config", why);

@@ -33,3 +33,4 @@ Check the template for details about each setting
 ## Todo
 - Better error handling 
 - handle large responses from mindus server
+- make things modular

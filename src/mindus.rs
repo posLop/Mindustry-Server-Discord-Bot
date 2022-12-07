@@ -13,8 +13,8 @@ pub struct TcpSock {
 impl TcpSock {
     pub fn new(ip: String, port: String) -> std::io::Result<Self> {
         let stream = TcpStream::connect(format!("{}:{}", ip, port)).expect("Tcp connection fail");
-        stream.set_read_timeout(Some(Duration::from_millis(200)))?;
-
+        stream.set_read_timeout(Some(Duration::from_millis(25)))?;
+        println!("Socket Connected!!");
         Ok(TcpSock { stream })
     }
 }
@@ -60,14 +60,13 @@ pub fn cons_rw(sock: &TcpSock, input: &str) -> String {
             Err(_) => break(),
         };
     }
-    println!("{}", output);
     output = String::from_utf8(strip_ansi_escapes::strip(&output).unwrap()).unwrap();
+    output.truncate(4000);
     output
 }
 
 
 pub async fn init_conf() -> Config {
-
 
     let mut toml_file = OpenOptions::new()
     .read(true)
@@ -79,12 +78,11 @@ pub async fn init_conf() -> Config {
 
     toml_file.read_to_string(&mut toml_str).unwrap();
     
-    println!("{}", toml_str);
-
     let config: Config = toml::from_str(&toml_str).expect("unable to fill Config struct");
 
     config
 }
+
 
 fn toml_make() -> File {
 println!("initializing config");
