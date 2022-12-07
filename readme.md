@@ -1,3 +1,9 @@
+## Real git
+
+https://mintyserver.net/git/poslop/Mindustry-Server-Discord-Bot
+
+This is the actual git for this project where releases are made
+
 ## Discrod
 https://discord.gg/sRKCKQAdU4
 
