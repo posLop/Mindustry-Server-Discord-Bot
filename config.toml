@@ -18,6 +18,7 @@ prefix = ";"
 
 [admin_roles]
 
+
 # These are the role ids needed in order to use the console command
 # If an invalid role is used it will be ignored
 # If all the roles are invalid or the list is empty the setting will be ignored
@@ -29,8 +30,11 @@ owners = ["738543444322156574", "822523680391037009"]
 # list of admin roles
 admins = []
 
-# this controls which commands admins have access too
+
 [console]
+
+
+# these control which commands admins have access too
 
 # whether the command list is a whitelist or a blacklist
 # true = whitelist
