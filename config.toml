@@ -1,8 +1,11 @@
+[discord_settings]
+
 # Discord bot token
 discord_token = ""
 
 # Ip of the mindustry server
 ip = "localhost"
+
 
 # Port of the mindustry server socket
 # Run 'config socketInputPort' in the mindustry console to find this port
@@ -12,11 +15,26 @@ port = "6859"
 # Can be any word letter or symbol
 prefix = ";"
 
-# These are the roles needed in order to use the associated command
-# If an invalid role is used it will be ignored.  If all the roles are invalid or the list is empty then anyone can use the command
-[roles]
-# Auth command
-auth = [""]
 
-# console command
-cons = ["738543444322156574", "822523680391037009"]
+# These are the role ids needed in order to use the console command
+# If an invalid role is used it will be ignored
+# If all the roles are invalid or the list is empty the setting will be ignored
+[admin_roles]
+
+# people with roles ids in the owner setting can use all console commands
+# if left empty anyone can use any of the commands
+owners = ["738543444322156574", "822523680391037009"]
+
+# list of admin roles
+admins = []
+
+# this controls which commands admins have access too
+[console]
+
+# whether the command list is a whitelist or a blacklist
+# true = whitelist
+# false = blacklist
+commands_whitelist = true
+
+# which commands are whitelisted/blacklisted to admins
+commands = ["config"]
