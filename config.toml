@@ -37,4 +37,4 @@ admins = []
 commands_whitelist = true
 
 # which commands are whitelisted/blacklisted to admins
-commands = ["config"]
+commands = ["config", "fillitems"]
