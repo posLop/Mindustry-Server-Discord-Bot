@@ -17,6 +17,14 @@ pub fn cons_rw(sock: &TcpSock, input: &str) -> String {
     let mut writer = std::io::BufWriter::new(sock.stream.try_clone().unwrap());
     let mut reader = std::io::BufReader::new(sock.stream.try_clone().unwrap());
 
+    loop {
+        match reader.read_line(&mut output) {
+            Ok(t) => t,
+            Err(_) => break(),
+        };
+    }
+    output.clear();
+
     writer.write((input.to_owned() + "\n").as_bytes()).unwrap();
     writer.flush().expect("flush failed");
     
@@ -29,6 +37,9 @@ pub fn cons_rw(sock: &TcpSock, input: &str) -> String {
     
     output = String::from_utf8(strip_ansi_escapes::strip(&output).unwrap()).unwrap();
     output.truncate(4000);
+
+
+
     output
 }
 
