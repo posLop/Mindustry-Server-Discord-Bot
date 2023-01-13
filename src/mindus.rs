@@ -23,6 +23,7 @@ pub fn cons_rw(sock: &TcpSock, input: &str) -> String {
             Err(_) => break(),
         };
     }
+
     output.clear();
 
     writer.write((input.to_owned() + "\n").as_bytes()).unwrap();

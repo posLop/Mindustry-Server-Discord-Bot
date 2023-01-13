@@ -10,7 +10,7 @@ pub struct TcpSock {
 impl TcpSock {
     pub fn new(ip: String, port: String) -> std::io::Result<Self> {
         let stream = TcpStream::connect(format!("{}:{}", ip, port)).expect("Tcp connection fail");
-        stream.set_read_timeout(Some(Duration::from_millis(25)))?;
+        stream.set_read_timeout(Some(Duration::from_millis(100)))?;
         println!("Socket Connected!!");
         Ok(TcpSock { stream })
     }
