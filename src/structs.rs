@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{time::Duration};
 use std::net::TcpStream;
 use serenity::prelude::{TypeMapKey};
 use std::{str};
@@ -8,8 +8,12 @@ pub struct TcpSock {
 }
 
 impl TcpSock {
-    pub fn new(ip: String, port: String) -> std::io::Result<Self> {
-        let stream = TcpStream::connect(format!("{}:{}", ip, port)).expect("Tcp connection fail");
+    pub fn new(ip: String, port: String) -> Result<Self, std::io::Error> {
+        let stream = match TcpStream::connect(format!("{}:{}", ip, port)) {
+            Ok(stream) => stream,
+            Err(e) => return Err(e),
+        };
+
         stream.set_read_timeout(Some(Duration::from_millis(100)))?;
         println!("Socket Connected!!");
         Ok(TcpSock { stream })

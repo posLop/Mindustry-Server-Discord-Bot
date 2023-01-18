@@ -10,6 +10,7 @@ use serenity::framework::standard::macros::{command, group, help, hook};
 use serenity::framework::standard::{StandardFramework, CommandResult, Args, HelpOptions, CommandGroup, help_commands};
 use serenity::utils::Color;
 use std::collections::HashSet;
+use std::process::exit;
 
 #[group]
 #[commands(ping, pong, console, git, discord, auth)]
@@ -47,11 +48,9 @@ async fn normal_message(_ctx: &Context, msg: &Message) {
 
 #[tokio::main]
 async fn main() {
-    
-
     let conf = init_conf().await;
 
-    let sock = TcpSock::new(conf.discord_settings.ip.clone(), conf.discord_settings.port.clone()).unwrap();
+    let sock = TcpSock::new(conf.discord_settings.ip.clone(), conf.discord_settings.port.clone()).expect("tcp connection failed");
 
     let framework = StandardFramework::new()
         .configure(|c| c
@@ -139,17 +138,52 @@ async fn console(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult 
             return Ok(());
         }
     }
+    
+    match cons_rw(sock, args.message()) {
+        Ok(n) => {
+            msg.channel_id.send_message(ctx, |m| {
+                m.content("")
+                    .embed(|e| e
+                        .title("Console")
+                        .description(n)
+                        .color(Color::ROSEWATER)
+                    )
+            }).await?;
+        }
+        Err(_e) => {
+            msg.channel_id.send_message(ctx, |m| {
+                m.content("")
+                    .embed(|e| e
+                        .title("Error")
+                        .description("Unable to connect to the mindustry server\nCheck if server has restarted\nBot shutting down")
+                        .color(Color::RED)
+                    )
+            }).await?;
+            exit(1);
 
+            // let mut w_data = ctx.data.write().await;
 
+            // match TcpSock::new(conf.discord_settings.ip.clone(), conf.discord_settings.port.clone()) {
+            //     Ok(n) => {
+            //         w_data.insert::<TcpSock>(n);
+            //         println!("reconnected");
+            //     }
+            //     Err(_e) => {
+            //         msg.channel_id.send_message(ctx, |m| {
+            //             m.content("")
+            //                 .embed(|e| e
+            //                     .title("Error")
+            //                     .description("Reconnection unsuccessful\nStopping bot")
+            //                     .color(Color::RED)
+            //                 )
+            //         }).await?;
+            //         println!("unable to reconnect");
+            //         exit(1);
+            //     }
+            // }
+        } 
+    }
 
-    msg.channel_id.send_message(ctx, |m| {
-        m.content("")
-            .embed(|e| e
-                .title("Console")
-                .description(cons_rw(sock, args.message()))
-                .color(Color::ROSEWATER)
-            )
-    }).await?;
     Ok(())
 }
 
@@ -164,14 +198,30 @@ async fn auth(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
 
     let sock = data.get::<TcpSock>().unwrap();
     
-    msg.channel_id.send_message(ctx, |m| {
-        m.content("")
-            .embed(|e| e
-                .title("Console")
-                .description(cons_rw(sock, &format!("auth add {}", args.message())))
-                .color(Color::ROSEWATER)
-            )
-    }).await?;
+    match cons_rw(sock, &format!("auth add {}", args.message())) {
+        Ok(n) => {
+            msg.channel_id.send_message(ctx, |m| {
+                m.content("")
+                    .embed(|e| e
+                        .title("Console")
+                        .description(n)
+                        .color(Color::ROSEWATER)
+                    )
+            }).await?;
+        }
+        Err(_e) => {
+            msg.channel_id.send_message(ctx, |m| {
+                m.content("")
+                    .embed(|e| e
+                        .title("Error")
+                        .description("Unable to connect to the mindustry server\nCheck if server has restarted\nBot shutting down")
+                        .color(Color::RED)
+                    )
+            }).await?;
+            exit(1);
+        }
+    }
+
     Ok(())
 }
 

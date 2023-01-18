@@ -10,26 +10,60 @@ use indoc::indoc;
 
 
 
-pub fn cons_rw(sock: &TcpSock, input: &str) -> String {
+pub fn cons_rw(sock: &TcpSock, input: &str) -> std::io::Result<String> {
+    
+    match sock.stream.peer_addr() {
+        Ok(peer_addr) => {
+            println!("connection to {} is availible", peer_addr);
+        },
+        Err(e) => {
+            println!("Error: {:?}", e);
+        }
+    }
 
     let mut output = String::new();
 
+    println!("creating writer");
     let mut writer = std::io::BufWriter::new(sock.stream.try_clone().unwrap());
+    
+    println!("creating reader");
     let mut reader = std::io::BufReader::new(sock.stream.try_clone().unwrap());
 
-    loop {
-        match reader.read_line(&mut output) {
-            Ok(t) => t,
-            Err(_) => break(),
-        };
+    let mut buf = [0; 1024];
+    match sock.stream.peek(&mut buf) {
+        Ok(n) if n > 0 => {
+            println!("data to be cleared from queue \nclearing");
+            loop {
+                match reader.read_line(&mut output) {
+                    Ok(t) => t,
+                    Err(_) => break(),
+                };
+            }
+        }
+        Ok(_) => {
+            println!("connection to socket lost\nis the server stopped or restarted?");
+            return Err(std::io::Error::new(std::io::ErrorKind::Other, "unable to connect to server"))
+        }
+        Err(e) => {
+            println!("error peeking {}", e);
+        }
     }
 
+
+    println!("clearing output variable");
     output.clear();
 
-    writer.write((input.to_owned() + "\n").as_bytes()).unwrap();
+    println!("writing");
+    writer.write((input.to_owned() + "\n").as_bytes()).expect("could not write to cons");
+    
+    println!("flushing writer");
     writer.flush().expect("flush failed");
     
+    let mut line = 0;
+    
     loop {
+        line += 1;
+        println!("reading line number {}", line);
         match reader.read_line(&mut output) {
             Ok(t) => t,
             Err(_) => break(),
@@ -41,7 +75,7 @@ pub fn cons_rw(sock: &TcpSock, input: &str) -> String {
 
 
 
-    output
+    Ok(output)
 }
 
 
