@@ -14,7 +14,7 @@ impl TcpSock {
             Err(e) => return Err(e),
         };
 
-        stream.set_read_timeout(Some(Duration::from_millis(100)))?;
+        stream.set_read_timeout(Some(Duration::from_millis(200)))?;
         println!("Socket Connected!!");
         Ok(TcpSock { stream })
     }

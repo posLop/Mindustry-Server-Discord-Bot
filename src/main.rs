@@ -10,7 +10,6 @@ use serenity::framework::standard::macros::{command, group, help, hook};
 use serenity::framework::standard::{StandardFramework, CommandResult, Args, HelpOptions, CommandGroup, help_commands};
 use serenity::utils::Color;
 use std::collections::HashSet;
-use std::process::exit;
 
 #[group]
 #[commands(ping, pong, console, git, discord, auth)]
@@ -45,6 +44,7 @@ async fn unknown_command(_ctx: &Context, _msg: &Message, unknown_command_name: &
 async fn normal_message(_ctx: &Context, msg: &Message) {
     println!("Message is not a command '{}'", msg.content);
 }
+
 
 #[tokio::main]
 async fn main() {
@@ -107,7 +107,6 @@ async fn pong(ctx: &Context, msg: &Message) -> CommandResult {
 async fn console(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
 
     let data = ctx.data.read().await;
-
     let sock = data.get::<TcpSock>().unwrap();
     let conf = data.get::<Config>().unwrap();
 
@@ -149,41 +148,24 @@ async fn console(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult 
                         .color(Color::ROSEWATER)
                     )
             }).await?;
+            return Ok(());
         }
+
         Err(_e) => {
             msg.channel_id.send_message(ctx, |m| {
                 m.content("")
                     .embed(|e| e
                         .title("Error")
-                        .description("Unable to connect to the mindustry server\nCheck if server has restarted\nBot shutting down")
+                        .description("Unable to connect to the mindustry server\nCheck if server has restarted\nAttempting Reconnect")
                         .color(Color::RED)
                     )
             }).await?;
-            exit(1);
 
-            // let mut w_data = ctx.data.write().await;
-
-            // match TcpSock::new(conf.discord_settings.ip.clone(), conf.discord_settings.port.clone()) {
-            //     Ok(n) => {
-            //         w_data.insert::<TcpSock>(n);
-            //         println!("reconnected");
-            //     }
-            //     Err(_e) => {
-            //         msg.channel_id.send_message(ctx, |m| {
-            //             m.content("")
-            //                 .embed(|e| e
-            //                     .title("Error")
-            //                     .description("Reconnection unsuccessful\nStopping bot")
-            //                     .color(Color::RED)
-            //                 )
-            //         }).await?;
-            //         println!("unable to reconnect");
-            //         exit(1);
-            //     }
-            // }
-        } 
+            drop(data);
+            recon(ctx, msg).await;
+            // exit(1);
+        }
     }
-
     Ok(())
 }
 
@@ -208,20 +190,24 @@ async fn auth(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
                         .color(Color::ROSEWATER)
                     )
             }).await?;
+            return Ok(());
         }
+
         Err(_e) => {
             msg.channel_id.send_message(ctx, |m| {
                 m.content("")
                     .embed(|e| e
                         .title("Error")
-                        .description("Unable to connect to the mindustry server\nCheck if server has restarted\nBot shutting down")
+                        .description("Unable to connect to the mindustry server\nCheck if server has restarted\nAttempting Reconnect")
                         .color(Color::RED)
                     )
             }).await?;
-            exit(1);
+            
+            drop(data);
+            recon(ctx, msg).await;
+            // exit(1);
         }
     }
-
     Ok(())
 }
 

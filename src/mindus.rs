@@ -1,9 +1,11 @@
 use crate::structs::*;
+use std::process::exit;
 use std::str::FromStr;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write, Seek, BufRead};
 use serenity::model::prelude::{Message, RoleId};
 use serenity::prelude::{Context};
+use serenity::utils::Color;
 use std::{str};
 use serenity::prelude::SerenityError;
 use indoc::indoc;
@@ -44,26 +46,26 @@ pub fn cons_rw(sock: &TcpSock, input: &str) -> std::io::Result<String> {
             println!("connection to socket lost\nis the server stopped or restarted?");
             return Err(std::io::Error::new(std::io::ErrorKind::Other, "unable to connect to server"))
         }
-        Err(e) => {
-            println!("error peeking {}", e);
+        Err(_e) => {
+            println!("queue empty");
         }
     }
 
 
-    println!("clearing output variable");
+    // println!("clearing output variable");
     output.clear();
 
-    println!("writing");
+    // println!("writing");
     writer.write((input.to_owned() + "\n").as_bytes()).expect("could not write to cons");
     
-    println!("flushing writer");
+    // println!("flushing writer");
     writer.flush().expect("flush failed");
     
-    let mut line = 0;
+    let mut _line = 0;
     
     loop {
-        line += 1;
-        println!("reading line number {}", line);
+        _line += 1;
+        // println!("reading line number {}", line);
         match reader.read_line(&mut output) {
             Ok(t) => t,
             Err(_) => break(),
@@ -190,4 +192,41 @@ pub fn is_command(command: String, command_vec: &Vec<String>) -> bool {
         }
     }
     false
+}
+
+pub async fn recon(ctx: &Context, msg: &Message) {
+
+    let data = ctx.data.read().await;
+    let conf = data.get::<Config>().unwrap();
+
+    match TcpSock::new(conf.discord_settings.ip.clone(), conf.discord_settings.port.clone()) {
+        Ok(n) => {
+            drop(data);
+            let mut w_data = ctx.data.try_write().expect("unable to create write");
+            w_data.insert::<TcpSock>(n);
+            println!("reconnected");
+
+            msg.channel_id.send_message(ctx, |m| {
+                m.content("")
+                    .embed(|e| e
+                        .title("Success")
+                        .description("Reconnection Succeeded\nRetry your command :)")
+                        .color(Color::ROSEWATER)
+                    )
+            }).await.unwrap();
+        }
+        Err(_e) => {
+            msg.channel_id.send_message(ctx, |m| {
+                m.content("")
+                    .embed(|e| e
+                        .title("Error")
+                        .description("Reconnection unsuccessful\nStopping bot")
+                        .color(Color::RED)
+                    )
+            }).await.unwrap();
+            println!("unable to reconnect");
+            exit(1);
+        }
+    }
+
 }
