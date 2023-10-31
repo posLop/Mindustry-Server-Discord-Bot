@@ -1,5 +1,5 @@
 ## Real git
-### [**Gitea**](https://mintyserver.net/git/poslop/Mindustry-Server-Discord-Bot)
+### [**Gitea**](https://git.mintyserver.net/poslop/Mindustry-Server-Discord-Bot)
 
 > This is the actual git for this project where **Releases** for **Download** are made
 
